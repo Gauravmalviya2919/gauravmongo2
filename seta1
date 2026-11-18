@@ -1,0 +1,134 @@
+
+
+
+
+Check installation in Command Prompt:
+
+```cmd
+mongod --version
+mongosh --version
+```
+
+> Run MongoDB commands in `mongosh`, not directly at the normal `C:\>` Command Prompt prompt. The `.bat` files are Windows CMD scripts.
+
+---
+
+# Scenario A2 – Student Records
+
+Database: `collegeDB`  
+Collection: `students`
+
+Open Command Prompt and run:
+
+```cmd
+mongosh
+```
+
+At the `mongosh` prompt, run the complete file:
+
+```javascript
+load("C:/path/to/mongodb-practical-github/scenario-a2-student-records/student_records.js")
+```
+
+Replace the path with the actual folder location on your PC. Alternatively, copy and paste the file contents into `mongosh`.
+
+### What the script does
+
+1. Selects `collegeDB`.
+2. Inserts Arun with `_id: 101`.
+3. Attempts a second insert with the same `_id: 101` and catches the expected duplicate-key error.
+4. Inserts the five remaining students (IDs 102–106).
+5. Runs all six requested queries: CSE students, marks >= 75, CSE or IT, DBMS mark > 80, and top three by overall marks.
+
+The script uses the student values shown in the question paper:
+
+| ID | Name | Department | Overall marks | DBMS | Maths |
+|---:|---|---|---:|---:|---:|
+| 101 | Arun | CSE | 78 | 85 | 70 |
+| 102 | Bala | IT | 66 | 60 | 72 |
+| 103 | Chitra | CSE | 91 | 95 | 87 |
+| 104 | Divya | ECE | 72 | 55 | 89 |
+| 105 | Eswar | IT | 84 | 88 | 80 |
+| 106 | Farah | CSE | 59 | 45 | 73 |
+
+**Important:** The insert section is intended for a fresh collection. If you run it again, the fixed `_id` values will already exist. To start over, run `db.students.drop()` once before rerunning the script (this deletes that collection's data).
+
+---
+
+# Scenario A4 – Banking App: Replica Set
+
+Replica set name: `rs0`  
+Members: `localhost:27017`, `localhost:27018`, `localhost:27019`  
+Database: `bankDB`  
+Collection: `accounts`
+
+## Step 1 – Create data folders
+
+Open Command Prompt and run:
+
+```cmd
+cd /d C:\
+mkdir data
+mkdir data\rs0-1
+mkdir data\rs0-2
+mkdir data\rs0-3
+```
+
+If a folder already exists, Windows may print a message; that is okay.
+
+## Step 2 – Start the three MongoDB servers
+
+Open **three separate Command Prompt windows**. Run one command in each window and leave all three windows open:
+
+Window 1:
+
+```cmd
+mongod --replSet rs0 --port 27017 --dbpath C:\data\rs0-1 --bind_ip localhost
+```
+
+Window 2:
+
+```cmd
+mongod --replSet rs0 --port 27018 --dbpath C:\data\rs0-2 --bind_ip localhost
+```
+
+Window 3:
+
+```cmd
+mongod --replSet rs0 --port 27019 --dbpath C:\data\rs0-3 --bind_ip localhost
+```
+
+You can also double-click the corresponding `.bat` files in this folder.
+
+## Step 3 – Initiate the replica set
+
+Open a fourth Command Prompt window:
+
+```cmd
+mongosh --host localhost --port 27017
+```
+
+At the `mongosh` prompt, run:
+
+```javascript
+load("C:/path/to/mongodb-practical-github/scenario-a4-banking-replica-set/05-initiate-replica-set.js")
+```
+
+Wait for the replica set election to finish. Check it using:
+
+```javascript
+rs.status()
+```
+
+
+Open another CMD window:
+
+```cmd
+mongosh "mongodb://localhost:27017,localhost:27018,localhost:27019/bankDB?replicaSet=rs0"
+```
+
+Run the numbered `.js` files with `load("C:/full/path/file.js")`, or copy their contents into `mongosh`.
+
+
+
+
